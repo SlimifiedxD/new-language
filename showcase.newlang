@@ -1,0 +1,161 @@
+// Don't be fooled by what's below! Though it has the conciseness of Python, it has the performance of Rust and C++! The language was designed to have zero-cost abstractions everywhere; everything is done at compile-time except your logic.
+// Memory is managed through the use of several tricks and techniques that the compiler employs, invisible to the end user: namely, a borrowing/ownership system and manual memory management where necessary.
+
+x = 5 // declare x and assign it to 5
+y = 10 // declare y and assign it to 10
+
+add_nums = a: int, b: int { // Create a function called add_nums that takes in 2 integers, 'a' and 'b', and return their sum
+    a + b // Implicitly return a + b; 'return a + b' could have also been used, but this shorthand is more terse
+}
+
+sum = add_nums(5, 10) // sum is 15
+
+print(sum)
+
+return_fn = {
+    add_nums // Return the function add_nums
+} // This has no parameters, so we don't need anything before the {}
+
+callback = return_fn()
+
+callback(5, 10) // 15
+
+class Person {
+    self name: string // Here, we need the 'self' keyword, or else this variable would be bound to the class itself. A detailed explanation is below.
+    self age: int
+    self internal_value = 3
+
+    Person = self, name: string, age:int { // a constructor that assign values to the fields
+        self.name = name
+        self.age = age
+    }
+
+    print_stuff = { // Since we are in a class and there is no 'self' parameter here, this will be bound to the class itself instead of a specific instance of it, similar to static methods in java
+    print("printing stuff!")
+    }
+}
+
+<T> // Specify that this class has a generic parameter T
+class Box {
+    self value: T // value is a field of type T
+
+    get = self {
+        self.value // Return our T value
+    }
+}
+
+box = Box(5)
+
+print(box.get()) // prints 5
+
+<U : Printable && !int && !float && !decimal> // Specify that this variable (which is a function) has a generic parameter U, which is guaranteed by the compiler to be printable but not be an int, float or decimal
+<R : Addable || Subtractable>
+constrained_generics = constrained: U {
+    print(U)
+    if R : Addable {
+    print(R + R)
+    } else {
+    print(R - R)
+    }
+}
+
+class Mixed { // this class is similar to an abstract class in java, but the language does not have dedicated keywords; everything is just a class
+    self amount: int
+    self implement_fn_later {}: string
+    self implemented_fn = {
+        "This is implemented by the Mixed class!"
+    } // this is implemented by this parent class already; no need for the child class to touch it!
+}
+
+class MixedImpl : Mixed { // this is similar to a java concrete class, like the ones made earlier, such as Person, meaning it can directly be instantiated
+    self implement_fn_later = {
+        "This is implemented by the MixedImpl class!"
+    }
+}
+
+class Interface {
+    self foo {}: int // this is named foo
+    self baz: int, bax: float bar {}: void // this is named bar
+} // there is no interface keyword, so this works; it only contains function definitions
+
+// The : is called the 'is' operator. Let's use it in a boolean expression:
+mixed = MixedImpl()
+
+if mixed : Mixed && mixed : MixedImpl {
+    print("this will always print!")
+} // this is true!
+
+// say we fetch from a database with this function:
+fetch_person = name: string { // there is no Nullable or Optional type; the compiler does all the work.
+    // fetch from db, return the person if found, otherwise, the compiler is going to do a trick you'll see in a second
+}
+
+person = fetch_person("Bob")
+
+if person { // the language does not have 'truthy'/'falsey' values, but this works because 'person' may/may not exist; if we used fields without doing this, the code would fail to compile and the compiler would tell us that we can't use this if it's not guaranteed to exist
+print("The person named Bob exists! His age is: {person.age}") // this works because the compiler knows that it now exists; it is safe to use.
+} else {
+    print("No person named Bob exists!")
+}
+
+// Believe it or not, the above features only showcase about 50% of the language's capabilities. The remaining power comes from decorators, which can fully modify the AST (Abstract Syntax Tree) with a clean API at compile time.
+// Let's revisit our 'Person' class from earlier:
+@getters // default is camel case
+@setters(Case.SNAKE_CASE)
+@not_accessible_by_default
+@self_fields_by_default
+class Person {
+    name: string
+    age: int
+    @exclude sensitive_password_for_gmail: string
+}
+
+person = Person()
+
+person.set_name("Bob")
+person.set_age(3)
+
+print(person.getName())
+print(person.getAge())
+//print(person.getSensitivePasswordForGmail()) this would result in a compile-time error; we specified that the field has the @exclude decorator, which is a marker decorator in the standard library to specify that other decorators shouldn't interact with the decorated element!
+
+// but what if we want multiple classes? it would be tiresome to put ALL those annotations every time.
+@getters // default is camel case
+@setters(Case.SNAKE_CASE)
+@not_accessible_by_default
+@self_fields_by_default
+@some_snake_case_java_style = {}
+
+@some_snake_case_java_style
+class Person {
+    name: string
+    age: int
+    @exclude sensitive_password_for_gmail: string
+}
+
+// let's use some standard-library things to introduce more complex features
+// say this is in another file; we're starting fresh!
+
+import std::Dictionary
+
+// This is going to be a mouthful, but it has to in order to make sense!
+// std::Dictionary is defined as Dictionary<K, V>. It overloads the '=' operator, so when we use this {} syntax, that is actually a dictionary under the hood.
+// Additionally, inside the {}, it has a DSL that dictionaries use. The {} is the entrance to this mini DSL language.
+my_dict: Dictionary<string, int> = { // we explicitly annotated the type here, but that's not necessary! it's type is inferred from how we use it.
+// However, it does not have to be {} syntax; that is just what the standard library uses for the dictionary. It could have well been something like [], e.g. my_dict = [
+"Banana": 3
+"Strawberry": 5
+]
+"Banana": 3
+"Strawberry": 5
+}
+
+import std::List
+
+// This is a List<String>
+// It also overloads the = operator to provide a convenient syntax
+my_list = ["foo", "bar", "baz"]
+
+// This overrides an expression operator on the left hand side of the expression, which is the [], and returns the value at that index
+print(my_list[0]) // this prints 'foo'; internally, it calls print(my_list.get(0))
+
