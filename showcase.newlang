@@ -98,6 +98,8 @@ print("The person named Bob exists! His age is: {person.age}") // this works bec
     print("No person named Bob exists!")
 }
 
+// the compiler will enforce that at some point, the absent value (if used) will have its presence handled.
+
 // Believe it or not, the above features only showcase about 50% of the language's capabilities. The remaining power comes from decorators, which can fully modify the AST (Abstract Syntax Tree) with a clean API at compile time.
 // Let's revisit our 'Person' class from earlier:
 @getters // default is camel case
