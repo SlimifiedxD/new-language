@@ -170,11 +170,11 @@ get_request = {
 }
 
 // tying into the existing absence/presence model, errors are handled the same way.
-// if an error occurs, you cannot use anything on the variable except for its '.error' value.
+// if an error occurs, you cannot use the variable; only a separaet variable called 'error', which is a string.
 // if an error does not occur, you can use it as normal.
 if get_request.create() {
     print("GET request was created!")
     print("{get_request.response}")
 } else {
-    print("Something went wrong! The error is: {get_request.error}")
+    print("Something went wrong! The error is: {error}")
 }
