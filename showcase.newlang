@@ -159,3 +159,22 @@ my_list = ["foo", "bar", "baz"]
 // This overrides an expression operator on the left hand side of the expression, which is the [], and returns the value at that index
 print(my_list[0]) // this prints 'foo'; internally, it calls print(my_list.get(0))
 
+// let's do some error handling! say we want to make an HTTP request:
+
+import std::web::HTTP
+
+// this is just a standard DSL
+get_request = {
+    method = "GET"
+    url = "https://example.com"
+}
+
+// tying into the existing absence/presence model, errors are handled the same way.
+// if an error occurs, you cannot use anything on the variable except for its '.error' value.
+// if an error does not occur, you can use it as normal.
+if get_request.create() {
+    print("GET request was created!")
+    print("{get_request.response}")
+} else {
+    print("Something went wrong! The error is: {get_request.error}")
+}
