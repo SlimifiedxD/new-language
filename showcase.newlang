@@ -168,3 +168,20 @@ auction = Auction("Diamond Sword", 1000, Point(20, 98))
 // Summary:
 // Use classes when you have mutable state, need inheritance, and do not know all values when instantiating the object.
 // Use structs when you need immutability, need composition, and know all values when instantiating the object.
+
+// CHAPTER 4: Operators
+
+// Operators are essential parts of your programs. Internally, all operators delegate to function/method calls.
+// They are simply syntactic sugar; let's look at the 'int' type in the standard library to see how it works.
+
+struct int {
+    binary: base2
+    add = other: int {
+        return int(self.binary + other.binary)
+    }
+
+    @operator // for now, all you need to know about this is that it is called a 'decorator' and it indicates to the compiler that this is an operator. it cannot be called like a normal function.
+    + = other: int {
+        return add(other)
+    }
+}
