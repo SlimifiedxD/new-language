@@ -158,7 +158,12 @@ struct Auction : Printable {
     name: string
     price: double
     sellingLocation: Point
+    with_price = price: double {
+        return Auction(self.name, price, self.sellingLocation)
+    }: Auction // we explicitly typed the return type of this method.
 }
+
+// Structs can also have methods, but a general rule of thumb is: if you find yourself trying to create state within a struct, just use a class.
 
 // To create a struct, you do it the same as a class, except for the fact that you must specify ALL fields in the struct
 auction = Auction("Diamond Sword", 1000, Point(20, 98))
@@ -174,7 +179,7 @@ auction = Auction("Diamond Sword", 1000, Point(20, 98))
 // Operators are essential parts of your programs. Internally, all operators delegate to function/method calls.
 // They are simply syntactic sugar; let's look at the 'int' type in the standard library to see how it works.
 
-class int {
+struct int {
     binary: base2
     add = other: int {
         return int(self.binary + other.binary)
