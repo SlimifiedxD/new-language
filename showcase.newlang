@@ -146,6 +146,7 @@ trait Printable {
     print = { // CREATES A DEFAULT IMPLEMENTATION of the print function that is used unless the user implements their own.
         str = "{"
         self.fields.forEach(field { // we don't have to specify the type of 'field'; we know what it is since it is a callback function
+        if !field.value.getTrait("Printable") return;
             str += "\{field.name}: \{field.value}, " // the += operator is overloaded; more on that later
         })
         str.trim()
@@ -161,3 +162,9 @@ struct Auction : Printable {
 
 // To create a struct, you do it the same as a class, except for the fact that you must specify ALL fields in the struct
 auction = Auction("Diamond Sword", 1000, Point(20, 98))
+
+// Fields on classes can never be accessed directly; getters/setters must be written for mutable state. The opposite is true for structs.
+
+// Summary:
+// Use classes when you have mutable state, need inheritance, and do not know all values when instantiating the object.
+// Use structs when you need immutability, need composition, and know all values when instantiating the object.
