@@ -65,9 +65,9 @@ if newNum {
 // CHAPTER 3: STRUCTS, TRAITS, CLASSES
 
 // First, let's define the difference between a 'class' and a 'struct'.
-// A class can extend other classes, allowing for OOP (Object-Oriented Programming).
+// A class can extend other classes, allowing for OOP (Object-Oriented Programming); it can also have traits attached to it.
 // A struct is data (similar to fields in a class) that can have 'traits' attached to it.
-// A trait is composed of functions that must be implemented by the struct it is applied to.
+// A trait is composed of functions that must be implemented by the type it is applied to.
 // Classes can only extend other classes, and vice-versa for structs.
 
 class Entity { // think of this class as an interface, with only declared methods; since not all methods are implemented, it cannot be instantiated
