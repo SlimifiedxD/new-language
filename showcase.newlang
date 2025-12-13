@@ -1,182 +1,163 @@
 // Don't be fooled by what's below! Though it has the conciseness of Python, it has the performance of Rust and C++! The language was designed to have zero-cost abstractions everywhere; everything is done at compile-time except your logic.
 // Memory is managed through the use of several tricks and techniques that the compiler employs, invisible to the end user: namely, a borrowing/ownership system and manual memory management where necessary.
 
-x = 5 // declare x and assign it to 5
-y = 10 // declare y and assign it to 10
+// the language supports multiple paradigms, including:
+// -- OOP
+// -- Generic Programming
+// -- Functional Programming
+// -- Meta-programming
+// -- Procedural Programming
 
-add_nums = a: int, b: int { // Create a function called add_nums that takes in 2 integers, 'a' and 'b', and return their sum
-    a + b // Implicitly return a + b; 'return a + b' could have also been used, but this shorthand is more terse
+// The language was built with one philosophy: nothing is hardcoded. Everything in the language and standard library should be able to be implemented by users.
+// However, the language should be recognizable across codebases. Ergo, you can only customize the language so much; otherwise, you should not be able to recognize it from project-to-project.
+
+// CHAPTER 1: THE BASICS
+x = 5 // assign variable x to the value 5
+
+foo = { // create a function named 'foo' with no parameters
+    print("Hello, from foo!") // call the print function with a string
 }
 
-sum = add_nums(5, 10) // sum is 15
+num = input() // input is a function that returns a string
+num = parseInt(num) // shadow the variable 'num' and make it an int with the previous value of 'num'
 
-print(sum)
-
-return_fn = {
-    add_nums // Return the function add_nums
-} // This has no parameters, so we don't need anything before the {}
-
-callback = return_fn()
-
-callback(5, 10) // 15
-
-class Person {
-    self name: string // Here, we need the 'self' keyword, or else this variable would be bound to the class itself. A detailed explanation is below.
-    self age: int
-    self internal_value = 3
-
-    Person = self, name: string, age:int { // a constructor that assign values to the fields
-        self.name = name
-        self.age = age
-    }
-
-    print_stuff = { // Since we are in a class and there is no 'self' parameter here, this will be bound to the class itself instead of a specific instance of it, similar to static methods in java
-    print("printing stuff!")
-    }
+bar = num: int {
+    return num * num
 }
 
-<T> // Specify that this class has a generic parameter T
-class Box {
-    self value: T // value is a field of type T
+// Even though we did not define the above functions, they are included in the prelude.
 
-    get = self {
-        self.value // Return our T value
-    }
+// CHAPTER 2: PRESENCE
+
+// Presence is an all-encompassing term for optional values and errors.
+
+may_make_error = num: int {
+    if num == 10 {
+        throw "This number cannot be 10!"
+    }
+    return 10 * 10
 }
 
-box = Box(5)
+newNum = may_make_error(3)
 
-print(box.get()) // prints 5
-
-<U : Printable && !int && !float && !decimal> // Specify that this variable (which is a function) has a generic parameter U, which is guaranteed by the compiler to be printable but not be an int, float or decimal
-<R : Addable || Subtractable>
-constrained_generics = constrained: U {
-    print(U)
-    if R : Addable {
-    print(R + R)
-    } else {
-    print(R - R)
-    }
+if newNum {
+    print(newNum) // prints 9; we can access the variable (and its properties/methods, if any) when we know it exists,
+    print("always true")
 }
 
-class Mixed { // this class is similar to an abstract class in java, but the language does not have dedicated keywords; everything is just a class
-    self amount: int
-    self implement_fn_later {}: string
-    self implemented_fn = {
-        "This is implemented by the Mixed class!"
-    } // this is implemented by this parent class already; no need for the child class to touch it!
-}
+// The same presence model is applied for errors and values that may not exist; for this reason, a function, if returning something, does not need to have return paths for every control flow; the presence model is applied implicitly.
+// Something note-worthy is that functions, if it is guranteed that a return value exists as their output, one will not have to check for presence; it will always be true.
+// in the above example, for example, since everything is done statically, the compiler warns us that the value will always exist.
 
-class MixedImpl : Mixed { // this is similar to a java concrete class, like the ones made earlier, such as Person, meaning it can directly be instantiated
-    self implement_fn_later = {
-        "This is implemented by the MixedImpl class!"
-    }
-}
+newNum = may_make_error(10) // shadow the variable newNum
 
-class Interface {
-    self foo {}: int // this is named foo
-    self baz: int, bax: float bar {}: void // this is named bar
-} // there is no interface keyword, so this works; it only contains function definitions
+if newNum {
 
-// The : is called the 'is' operator. Let's use it in a boolean expression:
-mixed = MixedImpl()
-
-if mixed : Mixed && mixed : MixedImpl {
-    print("this will always print!")
-} // this is true!
-
-// say we fetch from a database with this function:
-fetch_person = name: string { // there is no Nullable or Optional type; the compiler does all the work.
-    // fetch from db, return the person if found, otherwise, the compiler is going to do a trick you'll see in a second
-}
-
-person = fetch_person("Bob")
-
-if person { // the language does not have 'truthy'/'falsey' values, but this works because 'person' may/may not exist; if we used fields without doing this, the code would fail to compile and the compiler would tell us that we can't use this if it's not guaranteed to exist
-print("The person named Bob exists! His age is: {person.age}") // this works because the compiler knows that it now exists; it is safe to use.
 } else {
-    print("No person named Bob exists!")
+    // if an error was thrown, we can use a variable called error.
+    print(error)
+    // otherwise, if a variable just doesn't exist, you don't get information, as none would be of use.
 }
 
-// the compiler will enforce that at some point, the absent value (if used) will have its presence handled.
+// whether a value exists is only checked when it is used. this means that it can be implicitly passed to functions,
+// but regardless, wherever it is used, it must be handled.
 
-// Believe it or not, the above features only showcase about 50% of the language's capabilities. The remaining power comes from decorators, which can fully modify the AST (Abstract Syntax Tree) with a clean API at compile time.
-// Let's revisit our 'Person' class from earlier:
-@getters // default is camel case
-@setters(Case.SNAKE_CASE)
-@not_accessible_by_default
-@self_fields_by_default
-class Person {
-    name: string
-    age: int
-    @exclude sensitive_password_for_gmail: string
+// CHAPTER 3: STRUCTS, TRAITS, CLASSES
+
+// First, let's define the difference between a 'class' and a 'struct'.
+// A class can extend other classes, allowing for OOP (Object-Oriented Programming).
+// A struct is data (similar to fields in a class) that can have 'traits' attached to it.
+// A trait is composed of functions that must be implemented by the struct it is applied to.
+// Classes can only extend other classes, and vice-versa for structs.
+
+class Entity { // think of this class as an interface, with only declared methods; since not all methods are implemented, it cannot be instantiated
+    get_id = {}: int // here, we have to explicitly type the return type of the method; if we didn't, it would have been a void
+
+    set_id = {} // this is a void method
 }
 
-person = Person()
+class Person : Entity {
+    id: int
+    name: string
+    age: int
 
-person.set_name("Bob")
-person.set_age(3)
+    get_name = {
+        return self.name // self is implicitly brought into scope in methods in a class
+    }
 
-print(person.getName())
-print(person.getAge())
-//print(person.getSensitivePasswordForGmail()) this would result in a compile-time error; we specified that the field has the @exclude decorator, which is a marker decorator in the standard library to specify that other decorators shouldn't interact with the decorated element!
+    set_name = name: string {
+        self.name = name
+    }
 
-// but what if we want multiple classes? it would be tiresome to put ALL those annotations every time.
-@getters // default is camel case
-@setters(Case.SNAKE_CASE)
-@not_accessible_by_default
-@self_fields_by_default
-@some_snake_case_java_style = {}
+    get_age = {
+        return self.age
+    }
 
-@some_snake_case_java_style
-class Person {
-    name: string
-    age: int
-    @exclude sensitive_password_for_gmail: string
+    set_age = age: int {
+        self.age = age
+    }
+
+    get_id = {
+        return self.id
+    }
+
+    set_id = id: int {
+        self.id = id
+    }
 }
 
-// let's use some standard-library things to introduce more complex features
-// say this is in another file; we're starting fresh!
+class Employee : Person { // The : means 'Employee extends Person' in this case
+    job: string
 
-import std::Dictionary
+    get_job = {
+        return self.job
+    }
 
-// This is going to be a mouthful, but it has to in order to make sense!
-// std::Dictionary is defined as Dictionary<K, V>. It overloads the '=' operator, so when we use this {} syntax, that is actually a dictionary under the hood.
-// Additionally, inside the {}, it has a DSL that dictionaries use. The {} is the entrance to this mini DSL language.
-my_dict: Dictionary<string, int> = { // we explicitly annotated the type here, but that's not necessary! it's type is inferred from how we use it.
-// However, it does not have to be {} syntax; that is just what the standard library uses for the dictionary. It could have well been something like [], e.g. my_dict = [
-"Banana": 3
-"Strawberry": 5
-]
-"Banana": 3
-"Strawberry": 5
+    set_job = job: string {
+        self.job = job
+    }
 }
 
-import std::List
+employee = Employee()
 
-// This is a List<String>
-// It also overloads the = operator to provide a convenient syntax
-my_list = ["foo", "bar", "baz"]
-
-// This overrides an expression operator on the left hand side of the expression, which is the [], and returns the value at that index
-print(my_list[0]) // this prints 'foo'; internally, it calls print(my_list.get(0))
-
-// let's do some error handling! say we want to make an HTTP request:
-
-import std::web::HTTP
-
-// this is just a standard DSL
-get_request = {
-    method = "GET"
-    url = "https://example.com"
+if employee : Person { // essentially checking 'is Employee a Person?' YES!
+    if employee.get_job() {
+        // this will never print, always false; we never set the employee's job!
+        print(employee.get_job())
+    }
 }
 
-// tying into the existing absence/presence model, errors are handled the same way.
-// if an error occurs, you cannot use the variable; only a separaet variable called 'error', which is a string.
-// if an error does not occur, you can use it as normal.
-if get_request.create() {
-    print("GET request was created!")
-    print("{get_request.response}")
-} else {
-    print("Something went wrong! The error is: {error}")
+trait Printable {
+    print = {} // we declare that the implementing struct must include a function print.
 }
+
+struct Point : Printable {
+    x: int
+    y: int
+    print = {
+        print("{x: \{x}, y: \{y}}") // we support string interpolation with \{}!
+    }
+}
+
+// Sometimes, however, implementing the same trait many times can be cumbersome. Traits can have default implementations.
+
+trait Printable {
+    print = {} // DECLARES the print function
+    print = { // CREATES A DEFAULT IMPLEMENTATION of the print function that is used unless the user implements their own.
+        str = "{"
+        self.fields.forEach(field { // we don't have to specify the type of 'field'; we know what it is since it is a callback function
+            str += "\{field.name}: \{field.value}, " // the += operator is overloaded; more on that later
+        })
+        str.trim()
+        str += "}"
+    }
+}
+
+struct Auction : Printable {
+    name: string
+    price: double
+    sellingLocation: Point
+}
+
+// To create a struct, you do it the same as a class, except for the fact that you must specify ALL fields in the struct
+auction = Auction("Diamond Sword", 1000, Point(20, 98))
