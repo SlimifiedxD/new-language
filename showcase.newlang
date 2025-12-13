@@ -240,3 +240,21 @@ export struct Vector {
     pitch: float
     yaw: float
 }
+
+// CHAPTER 6: DSL'S
+
+// DSL's (Domain Specific Languages) allow are similar to operators in that all custom syntax is turned into function calls.
+// DSL's are essentially a mini-language inside of the programming language.
+// For example, let's take a look at the 'Dictionary' type from the standard library.
+
+import Dictionary
+
+fruits_to_prices: Dictionary = { // we have to explicitly type this as a Dictionary, or else it would be a function! the {} indicate that we are entering the DSL.
+    "Apple": 5
+    "Pear": 10
+    "Orange": 50
+    "Kiwi": 17
+    "Tomato": 1
+} // the Dictionary has a method called put(), which, as you can guess, puts a 'value' at the given 'key'. this DSL just turns each entry on a new line into 'put' calls.
+
+print(fruits_to_prices["Apple"]) // the [] syntax is an overloaded operator of the Dictionary; specifically, a postfix operator. internally, it just calls Dictionary.get()
