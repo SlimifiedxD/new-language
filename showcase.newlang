@@ -174,7 +174,7 @@ auction = Auction("Diamond Sword", 1000, Point(20, 98))
 // Operators are essential parts of your programs. Internally, all operators delegate to function/method calls.
 // They are simply syntactic sugar; let's look at the 'int' type in the standard library to see how it works.
 
-struct int {
+class int {
     binary: base2
     add = other: int {
         return int(self.binary + other.binary)
@@ -202,4 +202,36 @@ if my_int { // never true
     my_int += 3 // just another function
 } else {
     print(error)
+}
+
+// CHAPTER 5: Modules
+// THIS CHAPTER IS NOT COMPLETE AND MAY BE COMPLETELY REWORKED! BE WEARY!
+
+// Modules allow code to be reused across projects.
+// Creating modules mainly involves two keywords: 'import' and 'export'.
+
+// Let's take a look at how one might use them!
+
+// Let's say that this is in a file called point.newlang
+// This exports Point. Any code in the same file in which it is exported can use it without imports.
+export struct Point {
+    x: int
+    y: int
+}
+
+// let's say this is in a file called point-usage.newlang
+import Point
+
+point = Point(10, 20)
+
+// But what if not all of the code was something that we made, e.g. an external library?
+
+Let's say the export of the library looks like this:
+
+export struct Vector {
+    x: double
+    y: double
+    z: double
+    pitch: float
+    yaw: float
 }
