@@ -258,3 +258,4 @@ fruits_to_prices: Dictionary = { // we have to explicitly type this as a Diction
 } // the Dictionary has a method called put(), which, as you can guess, puts a 'value' at the given 'key'. this DSL just turns each entry on a new line into 'put' calls.
 
 print(fruits_to_prices["Apple"]) // the [] syntax is an overloaded operator of the Dictionary; specifically, a postfix operator. internally, it just calls Dictionary.get()
+// the above code will print '5'
