@@ -185,3 +185,21 @@ struct int {
         return add(other)
     }
 }
+
+// let's see how operators integrate with the presence model.
+
+impossible_int = {
+    if { // this is equivalent to 'if true'; the language does not have boolean keywords
+        throw "int could not be constructed!"
+    }
+}
+
+my_int = impossible_int()
+
+newNum = my_int + 3 // compile-time error: my_int cannot be used as an int because it is proven to not exist by the compiler.
+
+if my_int { // never true
+    my_int += 3 // just another function
+} else {
+    print(error)
+}
