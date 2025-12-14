@@ -250,13 +250,66 @@ export struct Vector {
 
 import Dictionary
 
-fruits_to_prices: Dictionary = { // we have to explicitly type this as a Dictionary, or else it would be a function! the {} indicate that we are entering the DSL.
+fruits_to_prices: Dictionary = [ // we have to explicitly type this as a Dictionary, or else it would be a function! the [] indicate that we are entering the DSL.
     "Apple": 5
     "Pear": 10
     "Orange": 50
     "Kiwi": 17
     "Tomato": 1
-} // the Dictionary has a method called put(), which, as you can guess, puts a 'value' at the given 'key'. this DSL just turns each entry on a new line into 'put' calls.
+] // the Dictionary has a method called put(), which, as you can guess, puts a 'value' at the given 'key'. this DSL just turns each entry on a new line into 'put' calls.
 
 print(fruits_to_prices["Apple"]) // the [] syntax is an overloaded operator of the Dictionary; specifically, a postfix operator. internally, it just calls Dictionary.get()
 // the above code will print '5'
+
+// Anotmer example is the List from the STL.
+
+import List
+
+people: List = ["Jeremy", "Bob", "Daquavius", "Clay", "George"]
+// these are just turned into List.add() calls.
+
+// CHAPTER 7: Generics
+
+Generics allow for programs to be more reusable. When combined with inheritance, traits, or both, they can make your code more flexible.
+
+// Let's take a look at how to declare a generic.
+
+struct Generic <T> { // Just as you can specify function parameters, classes and structs can take in generics with almost identical syntax, except for type specifying (it will be clarified soon).
+value: T // declare that we take in a value of type T.
+
+print = {
+print(T) // this will give a compile-time error! it will be shown why in a second.
+}
+}
+
+// In order to use it, we can do this:
+generic = Generic("foo")
+generic2 = Generic(4.5)
+
+generic.print()
+generic2.print()
+
+// The above code will give compile-time errors because 'T' is not guaranteed to conform to 'Display'
+// What does that mean? Well, the std-lib provides a trait called 'Display'. Let's take a look!
+
+trait Display {
+display = {}: string
+}
+
+// Well, why does print care about 'Display'?
+
+print <T : Display> = type: T  {
+// internal logic that calls type.display()
+}
+
+// As you can see, we can add bounds to generics in order to confirm that they support specific operations.
+// Let's revisit our struct from earlier.
+
+struct Generic <T : Display> {
+value: T
+print = {
+print(T) // T now conforms to the Display trait!
+}
+}
+
+// Now, if it is used on a type that has the display trait, it will work succesfully! Otherwise, it will throw a compile-time error.
