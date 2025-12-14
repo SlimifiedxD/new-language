@@ -5,8 +5,9 @@
 // -- OOP
 // -- Generic Programming
 // -- Functional Programming
-// -- Meta-programming
+// -- Meta Programming
 // -- Procedural Programming
+// -- Event-Driven Programming
 
 // The language was built with one philosophy: nothing is hardcoded. Everything in the language and standard library should be able to be implemented by users.
 // However, the language should be recognizable across codebases. Ergo, you can only customize the language so much; otherwise, you should not be able to recognize it from project-to-project.
