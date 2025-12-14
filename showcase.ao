@@ -1,5 +1,9 @@
+// This is 'Ao', the next generation programming language. Gone are the days of manually handling memory; the compiler does everything.
+
+
 // Don't be fooled by what's below! Though it has the conciseness of Python, it has the performance of Rust and C++! The language was designed to have zero-cost abstractions everywhere; everything is done at compile-time except your logic.
 // Memory is managed through the use of several tricks and techniques that the compiler employs, invisible to the end user: namely, a borrowing/ownership system and manual memory management where necessary.
+
 
 // the language supports multiple paradigms, including:
 // -- OOP
@@ -218,14 +222,14 @@ if my_int { // never true
 
 // Let's take a look at how one might use them!
 
-// Let's say that this is in a file called point.newlang
+// Let's say that this is in a file called point.ao
 // This exports Point. Any code in the same file in which it is exported can use it without imports.
 export struct Point {
     x: int
     y: int
 }
 
-// let's say this is in a file called point-usage.newlang
+// let's say this is in a file called point-usage.ao
 import Point
 
 point = Point(10, 20)
