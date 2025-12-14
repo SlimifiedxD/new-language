@@ -317,3 +317,17 @@ print(T) // T now conforms to the Display trait!
 }
 
 // Now, if it is used on a type that has the display trait, it will work succesfully! Otherwise, it will throw a compile-time error.
+
+// CHAPTER 8: Meta Programming
+
+// Meta programming allows the programmer to extend and customize the language.
+// The foundation of meta-programming is decorators, sometimes called annotations.
+
+// Let's take a look at standard-library metaprogramming decorators.
+// First, we will review @validate.
+
+divide = a: int, @validate(b > 0) b: int {
+return a / b
+}
+
+// @validate takes in a boolean expression that is evaluated at compile-time. if the value being passed in to the function is chosen at runtime, the compiler will simply not allow the program to compiler unless the programmer handles the validation.
